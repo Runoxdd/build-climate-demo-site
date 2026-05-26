@@ -69,7 +69,7 @@ function App() {
 
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router basename="/build-climate-demo-site">
+        <Router basename={import.meta.env.PROD ? "/build-climate-demo-site" : ""}>
           <AuthenticatedApp />
           <Toaster />
         </Router>

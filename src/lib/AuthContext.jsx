@@ -35,12 +35,12 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     
     if (shouldRedirect) {
-      window.location.href = '/login';
+      window.location.href = import.meta.env.PROD ? '/build-climate-demo-site/login' : '/login';
     }
   };
 
   const navigateToLogin = () => {
-    window.location.href = '/login';
+    window.location.href = import.meta.env.PROD ? '/build-climate-demo-site/login' : '/login';
   };
 
   return (

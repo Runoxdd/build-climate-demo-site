@@ -6,12 +6,12 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export default defineConfig({
-  base: '/build-climate-demo-site/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/build-climate-demo-site/' : '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+}))

@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Light mode */
+:root.light-mode {
+  --bc-bg: #f1f5f9;
+  --bc-surface: #ffffff;
+  --bc-surface2: #f0f4f8;
+  --bc-border: rgba(0,0,0,0.10);
+  --bc-text: #1e293b;
+  --bc-text-muted: #475569;
+  --bc-text-soft: #64748b;
+  --bc-nav-bg: rgba(255,255,255,0.97);
+  --bc-nav-border: rgba(0,0,0,0.08);
+  --bc-label: #334155;
+}
+
+/* Dark mode */
+:root.dark-mode, :root {
+  --bc-bg: #020617;
+  --bc-surface: #0f172a;
+  --bc-surface2: #1e293b;
+  --bc-border: rgba(255,255,255,0.08);
+  --bc-text: #f8fafc;
+  --bc-text-muted: #94a3b8;
+  --bc-text-soft: #cbd5e1;
+  --bc-nav-bg: rgba(15,23,42,0.97);
+  --bc-nav-border: rgba(255,255,255,0.08);
+  --bc-label: #cbd5e1;
+}

@@ -1,7 +1,7 @@
 import Home from './pages/Home';
 import RiskAssessment from './pages/RiskAssessment';
 import ClimateMap from './pages/ClimateMap';
-import AdaptationGuide from './pages/AdaptationGuide';
+import Adaptationguide from './pages/Adaptationguide';
 import Research from './pages/Research';
 import Contact from './pages/Contact';
 import LagosRealtimeClimate from './pages/LagosRealtimeClimate';
@@ -14,7 +14,7 @@ export const pagesConfig = {
     "Home": Home,
     "RiskAssessment": RiskAssessment,
     "ClimateMap": ClimateMap,
-    "AdaptationGuide": AdaptationGuide,
+    "AdaptationGuide": Adaptationguide,
     "Research": Research,
     "LagosRealtimeClimate": LagosRealtimeClimate,
     "Contact": Contact,

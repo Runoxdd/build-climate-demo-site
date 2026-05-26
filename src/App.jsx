@@ -66,9 +66,10 @@ const AuthenticatedApp = () => {
 function App() {
 
   return (
+
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
+        <Router basename="/build-climate-demo-site">
           <AuthenticatedApp />
           <Toaster />
         </Router>

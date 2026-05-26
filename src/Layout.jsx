@@ -1,9 +1,8 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { ThemeProvider, useTheme } from "./lib/ThemeContext";
+import { ThemeProvider } from "./lib/ThemeContext";
 
 function LayoutInner({ children }) {
-  const { theme } = useTheme();
   return (
     <div
       className="min-h-screen flex flex-col transition-colors duration-300"

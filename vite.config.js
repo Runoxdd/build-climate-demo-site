@@ -2,9 +2,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  base: '/build-climate-demo-site/',  // Change if repo name is different
+  base: '/build-climate-demo-site/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronUp, Shield, Droplets, Thermometer, Calendar, HardHat, Wrench } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronUp, Shield, Droplets, Calendar, HardHat, Wrench } from "lucide-react";
 
 const categories = [
   {

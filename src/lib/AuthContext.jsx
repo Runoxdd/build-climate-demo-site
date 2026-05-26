@@ -1,6 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { appParams } from '@/lib/app-params';
+import { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
 
@@ -10,11 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
   const [authError, setAuthError] = useState(null);
-  const [appPublicSettings, setAppPublicSettings] = useState(null);
-
-  useEffect(() => {
-    checkAppState();
-  }, []);
 
   const checkAppState = async () => {
     try {
@@ -33,26 +26,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const checkUserAuth = async () => {
-    try {
-      setIsLoadingAuth(true);
-      const response = await base44.get('/users/me');
-      setUser(response);
-      setIsAuthenticated(true);
-      setIsLoadingAuth(false);
-    } catch (error) {
-      console.error('User auth check failed:', error);
-      setIsLoadingAuth(false);
-      setIsAuthenticated(false);
-      
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
-    }
-  };
+  useEffect(() => {
+    checkAppState();
+  }, []);
 
   const logout = (shouldRedirect = true) => {
     setUser(null);
@@ -74,7 +50,6 @@ export const AuthProvider = ({ children }) => {
       isLoadingAuth,
       isLoadingPublicSettings,
       authError,
-      appPublicSettings,
       logout,
       navigateToLogin,
       checkAppState

@@ -115,7 +115,7 @@ export default function Effects() {
           <Link to="/Variables" className="border border-white/20 hover:border-white/40 transition px-6 py-3 rounded-xl font-semibold text-slate-300">
             ← Previous
           </Link>
-          <Link to="/Strategies" className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-xl font-semibold">
+          <Link to="/Strategist" className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-xl font-semibold">
             Next: Management Strategies →
           </Link>
         </div>

@@ -1,15 +1,16 @@
-"use client";
 import { useTheme } from "@/lib/ThemeContext"
 import { Toaster as Sonner } from "sonner"
 
 const Toaster = ({
   ...props
 }) => {
+  let theme = "dark";
+  
   try {
     const themeContext = useTheme()
-    var theme = themeContext?.theme ?? "dark"
+    theme = themeContext?.theme ?? "dark"
   } catch {
-    var theme = "dark"
+    // Theme context not available, use default
   }
 
   return (

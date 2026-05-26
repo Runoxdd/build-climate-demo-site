@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
-import { MapPin, Info, Droplets, Thermometer, Wind, Loader, RefreshCw, AlertCircle } from "lucide-react";
-import {
-  lagosZones as configZones,
-  fetchWeatherData,
-  WEATHER_API_KEY,
-} from "@/utils/lagosWeatherConfig";
-import {
-  processWeatherData,
-} from "@/utils/riskCalculations";
+import { MapPin, Droplets, Thermometer, Wind, Loader, RefreshCw, AlertCircle } from "lucide-react";
+import { fetchWeatherData, WEATHER_API_KEY } from "@/utils/lagosWeatherConfig";
+import { processWeatherData } from "@/utils/riskCalculations";
 
 /**
  * Map zones with x,y coordinates for positioning on the visual map
@@ -119,7 +113,6 @@ export default function ClimateMap() {
 
       if (WEATHER_API_KEY === "INSERT_API_KEY_HERE") {
         setApiError("API key not configured. Showing default zone data.");
-        // Use mapZones immediately as fallback - they have x,y positioning
         setZones(mapZones.map(z => ({
           ...z,
           floodRisk: "Moderate",
@@ -130,7 +123,6 @@ export default function ClimateMap() {
         return;
       }
 
-      // Fetch weather for all zones in parallel using mapZones (which have x,y coords)
       const promises = mapZones.map(async (zone) => {
         try {
           const weatherData = await fetchWeatherData(zone.lat, zone.lon);
@@ -145,8 +137,7 @@ export default function ClimateMap() {
             weatherDescription: processedData.weatherDescription,
             timestamp: processedData.timestamp,
           };
-        } catch (err) {
-          // On error, return zone with placeholder data
+        } catch {
           return {
             ...zone,
             floodRisk: "Moderate",
@@ -162,7 +153,6 @@ export default function ClimateMap() {
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
       setApiError("Failed to fetch map data. Showing default zone data.");
-      // Fallback to mapZones on error
       setZones(mapZones.map(z => ({
         ...z,
         floodRisk: "Moderate",
@@ -176,16 +166,10 @@ export default function ClimateMap() {
     }
   };
 
-  /**
-   * Load data on component mount
-   */
   useEffect(() => {
     fetchZonesData();
   }, []);
 
-  /**
-   * Handle manual refresh
-   */
   const handleRefresh = () => {
     setRefreshing(true);
     fetchZonesData();
@@ -200,7 +184,6 @@ export default function ClimateMap() {
           Real-time climate risk visualization. Click on any location to explore flood vulnerability, heat stress, and construction challenges. Data powered by live weather API.
         </p>
         
-        {/* Last Updated & Refresh Controls */}
         <div className="flex items-center justify-between mt-4">
           {lastUpdated && (
             <p className="text-xs" style={{ color: "var(--bc-text-muted)" }}>
@@ -226,7 +209,6 @@ export default function ClimateMap() {
           </button>
         </div>
 
-        {/* API Error Alert */}
         {apiError && (
           <div
             className="mt-3 p-3 rounded-lg border flex items-start gap-2 text-xs"
@@ -242,65 +224,60 @@ export default function ClimateMap() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Map */}
         <div className="lg:col-span-2">
-          <div className="rounded-2xl overflow-hidden relative" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }} style={{ paddingBottom: "65%" }}>
-            {/* Map background */}
-            <div className="absolute inset-0">
-              <img
-                src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&q=80"
-                alt="Lagos Map Background"
-                className="w-full h-full object-cover opacity-20"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-950/80 to-blue-950/80" />
-              {/* Grid lines */}
-              <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
-                {[10,20,30,40,50,60,70,80,90].map(v => (
-                  <g key={v}>
-                    <line x1={`${v}%`} y1="0" x2={`${v}%`} y2="100%" stroke="white" strokeWidth="0.5" />
-                    <line x1="0" y1={`${v}%`} x2="100%" y2={`${v}%`} stroke="white" strokeWidth="0.5" />
-                  </g>
-                ))}
-              </svg>
-              {/* Lagos label */}
-              <div className="absolute top-4 left-4 text-white/60 text-xs font-semibold uppercase tracking-widest">Lagos State — Nigeria</div>
-              <div className="absolute bottom-4 right-4 text-white/40 text-xs">© BuildClimate Platform</div>
+          <div className="rounded-2xl overflow-hidden relative" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
+            <div style={{ paddingBottom: "65%" }}>
+              <div className="absolute inset-0">
+                <img
+                  src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&q=80"
+                  alt="Lagos Map Background"
+                  className="w-full h-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-950/80 to-blue-950/80" />
+                <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+                  {[10,20,30,40,50,60,70,80,90].map(v => (
+                    <g key={v}>
+                      <line x1={`${v}%`} y1="0" x2={`${v}%`} y2="100%" stroke="white" strokeWidth="0.5" />
+                      <line x1="0" y1={`${v}%`} x2="100%" y2={`${v}%`} stroke="white" strokeWidth="0.5" />
+                    </g>
+                  ))}
+                </svg>
+                <div className="absolute top-4 left-4 text-white/60 text-xs font-semibold uppercase tracking-widest">Lagos State — Nigeria</div>
+                <div className="absolute bottom-4 right-4 text-white/40 text-xs">© BuildClimate Platform</div>
 
-              {/* Zone Pins */}
-              {zones.map((z, i) => {
-                const isSelected = selected?.name === z.name;
-                const riskDotClass = riskDot[z.floodRisk];
-                return (
-                  <button
-                    key={i}
-                    onClick={() => setSelected(z)}
-                    className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
-                    style={{ left: `${z.x}%`, top: `${z.y}%` }}
-                  >
-                    <div className={`relative flex items-center justify-center transition-all ${isSelected ? "scale-125" : "hover:scale-110"}`}>
-                      <div className={`w-4 h-4 rounded-full ${riskDotClass} ${isSelected ? "ring-4 ring-white/40" : ""} shadow-lg`} />
-                      <div className={`absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border border-white/20 pointer-events-none`}>
-                        {z.name}
+                {zones.map((z, i) => {
+                  const isSelected = selected?.name === z.name;
+                  const riskDotClass = riskDot[z.floodRisk];
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setSelected(z)}
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+                      style={{ left: `${z.x}%`, top: `${z.y}%` }}
+                    >
+                      <div className={`relative flex items-center justify-center transition-all ${isSelected ? "scale-125" : "hover:scale-110"}`}>
+                        <div className={`w-4 h-4 rounded-full ${riskDotClass} ${isSelected ? "ring-4 ring-white/40" : ""} shadow-lg`} />
+                        <div className={`absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border border-white/20 pointer-events-none`}>
+                          {z.name}
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Legend */}
-          <div className="flex flex-wrap gap-4 mt-4">
-            {Object.entries(riskDot).map(([label, cls]) => (
-              <div key={label} className="flex items-center gap-2 text-xs" style={{ color: "var(--bc-text-muted)" }}>
-                <div className={`w-3 h-3 rounded-full ${cls}`} />
-                {label} Flood Risk
+                    </button>
+                  );
+                })}
               </div>
-            ))}
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-4">
+              {Object.entries(riskDot).map(([label, cls]) => (
+                <div key={label} className="flex items-center gap-2 text-xs" style={{ color: "var(--bc-text-muted)" }}>
+                  <div className={`w-3 h-3 rounded-full ${cls}`} />
+                  {label} Flood Risk
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Info Panel */}
         <div className="rounded-2xl p-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
           {!selected ? (
             <div className="flex flex-col items-center justify-center h-full py-16" style={{ color: "var(--bc-text-muted)" }}>
@@ -345,7 +322,6 @@ export default function ClimateMap() {
         </div>
       </div>
 
-      {/* Zone Summary Table */}
       <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
         <div className="px-6 py-4 border-b" style={{ borderColor: "var(--bc-border)" }}>
           <h2 className="font-bold">All Zones — Risk Summary</h2>
@@ -360,8 +336,7 @@ export default function ClimateMap() {
                 <th className="px-6 py-3 text-left font-medium" style={{ color: "var(--bc-text-muted)" }}>Rainfall Risk</th>
               </tr>
             </thead>
-            <tbody style={{ borderColor: "var(--bc-border)" }} className="divide-y"
-            >
+            <tbody style={{ borderColor: "var(--bc-border)" }} className="divide-y">
               {zones.map((z, i) => (
                 <tr key={i} className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setSelected(z)}>
                   <td className="px-6 py-3 font-medium" style={{ color: "var(--bc-text)" }}>{z.name}</td>

@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 
 const tempData = [
   { year: "1990", temp: 26.8 }, { year: "1995", temp: 27.1 }, { year: "2000", temp: 27.3 },
@@ -37,7 +37,6 @@ export default function Research() {
         </p>
       </div>
 
-      {/* Key Research Findings */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {insights.map((ins, i) => (
           <div key={i} className="rounded-2xl p-5" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
@@ -48,7 +47,6 @@ export default function Research() {
         ))}
       </div>
 
-      {/* Temperature Trend */}
       <div className="rounded-2xl p-6 mb-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
         <h2 className="text-lg font-bold mb-1">Lagos Average Temperature Trend (1990–2024)</h2>
         <p className="text-sm mb-6" style={{ color: "var(--bc-text-muted)" }}>Documenting the steady rise in average annual temperatures in Lagos State</p>
@@ -63,7 +61,6 @@ export default function Research() {
         </ResponsiveContainer>
       </div>
 
-      {/* Productivity & Delay Charts */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="rounded-2xl p-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
           <h2 className="text-lg font-bold mb-1">Climate Factor Impact on Productivity</h2>
@@ -92,7 +89,6 @@ export default function Research() {
         </div>
       </div>
 
-      {/* Research Context */}
       <div className="rounded-2xl p-8 mb-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
         <h2 className="text-xl font-bold mb-5">Research Context & Literature Review</h2>
         <div className="space-y-5 text-sm leading-relaxed" style={{ color: "var(--bc-text-soft)" }}>
@@ -111,7 +107,6 @@ export default function Research() {
         </div>
       </div>
 
-      {/* References */}
       <div className="rounded-2xl p-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
         <h2 className="text-lg font-bold mb-4">Key References</h2>
         <ul className="space-y-2 text-sm" style={{ color: "var(--bc-text-muted)" }}>

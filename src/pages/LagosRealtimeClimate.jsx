@@ -16,14 +16,13 @@ import {
 } from "@/utils/lagosWeatherConfig";
 import {
   processWeatherData,
-  getRiskLevel,
 } from "@/utils/riskCalculations";
 
 /**
  * RiskMeterSmall Component
  * Displays a compact risk meter with score and label
  */
-function RiskMeterSmall({ label, score, riskLevel }) {
+function RiskMeterSmall({ label, score }) {
   const isHighRisk = score >= 60;
   const isCritical = score >= 80;
 
@@ -107,7 +106,6 @@ function ZoneCard({ zoneData, loading, error }) {
         borderColor: "var(--bc-border)",
       }}
     >
-      {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-sm font-bold" style={{ color: "var(--bc-text)" }}>
@@ -126,7 +124,6 @@ function ZoneCard({ zoneData, loading, error }) {
         </div>
       </div>
 
-      {/* Current Weather */}
       <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b" style={{ borderColor: "var(--bc-border)" }}>
         <div>
           <p className="text-2xl font-bold" style={{ color: "var(--bc-text)" }}>
@@ -158,17 +155,15 @@ function ZoneCard({ zoneData, loading, error }) {
         </div>
       </div>
 
-      {/* Risk Scores */}
       <div className="mb-4">
-        <RiskMeterSmall label="🌊 Flood Risk" score={zoneData.floodRisk} />
-        <RiskMeterSmall label="☀️ Heat Stress" score={zoneData.heatRisk} />
+        <RiskMeterSmall label="Flood Risk" score={zoneData.floodRisk} />
+        <RiskMeterSmall label="Heat Stress" score={zoneData.heatRisk} />
         <RiskMeterSmall
-          label="🌧️ Rainfall Delay"
+          label="Rainfall Delay"
           score={zoneData.rainfallRisk}
         />
       </div>
 
-      {/* Construction Insights */}
       {zoneData.insights && zoneData.insights.length > 0 && (
         <div className="pt-3 border-t" style={{ borderColor: "var(--bc-border)" }}>
           <p
@@ -195,9 +190,34 @@ function ZoneCard({ zoneData, loading, error }) {
   );
 }
 
-/**
- * Main Dashboard Component
- */
+function getRiskLevel(score) {
+  if (score >= 80) {
+    return {
+      label: "Very High Risk",
+      level: "very_high",
+      badgeColor: "bg-red-600",
+    };
+  } else if (score >= 60) {
+    return {
+      label: "High Risk",
+      level: "high",
+      badgeColor: "bg-orange-600",
+    };
+  } else if (score >= 40) {
+    return {
+      label: "Moderate Risk",
+      level: "moderate",
+      badgeColor: "bg-yellow-600",
+    };
+  } else {
+    return {
+      label: "Low Risk",
+      level: "low",
+      badgeColor: "bg-green-600",
+    };
+  }
+}
+
 function DashboardContent({ 
   zoneDataList, 
   loading, 
@@ -223,7 +243,6 @@ function DashboardContent({
 
   return (
     <div>
-      {/* Status Bar */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div
           className="rounded-lg p-4 border"
@@ -291,7 +310,6 @@ function DashboardContent({
         </div>
       </div>
 
-      {/* Last Updated & Refresh */}
       <div className="flex items-center justify-between mb-6">
         {lastUpdated && (
           <p className="text-xs" style={{ color: "var(--bc-text-muted)" }}>
@@ -317,7 +335,6 @@ function DashboardContent({
         </button>
       </div>
 
-      {/* API Error Alert */}
       {apiError && (
         <div
           className="rounded-lg p-4 mb-6 border flex items-start gap-3"
@@ -331,7 +348,7 @@ function DashboardContent({
             <p className="text-sm font-bold text-red-700">{apiError}</p>
             {apiError.includes("API key") && (
               <p className="text-xs text-red-600 mt-2">
-                📝 To fix this: Open{" "}
+                {" To fix this: Open "}
                 <code className="bg-red-100 px-1 rounded">
                   src/utils/lagosWeatherConfig.js
                 </code>{" "}
@@ -352,7 +369,6 @@ function DashboardContent({
         </div>
       )}
 
-      {/* Zone Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading && lagosZones.length > 0 ? (
           lagosZones.map((zone) => (
@@ -375,7 +391,6 @@ function DashboardContent({
         ) : null}
       </div>
 
-      {/* Empty State */}
       {!loading && zoneDataList.length === 0 && !apiError && (
         <div
           className="rounded-lg p-8 text-center"
@@ -398,9 +413,6 @@ function DashboardContent({
   );
 }
 
-/**
- * Main Page Component
- */
 export default function LagosRealtimeClimate() {
   const [zoneDataList, setZoneDataList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -408,9 +420,6 @@ export default function LagosRealtimeClimate() {
   const [refreshing, setRefreshing] = useState(false);
   const [apiError, setApiError] = useState(null);
 
-  /**
-   * Fetch weather data for all zones
-   */
   const fetchAllZonesData = async () => {
     try {
       setApiError(null);
@@ -423,13 +432,12 @@ export default function LagosRealtimeClimate() {
         return;
       }
 
-      // Fetch data for all zones in parallel
       const promises = lagosZones.map(async (zone) => {
         try {
           const weatherData = await fetchWeatherData(zone.lat, zone.lon);
           const processedData = processWeatherData(weatherData, zone);
           return { ...processedData, error: null };
-        } catch (err) {
+        } catch {
           return {
             location: zone.name,
             error: `Failed to load data for ${zone.name}`,
@@ -449,16 +457,10 @@ export default function LagosRealtimeClimate() {
     }
   };
 
-  /**
-   * Initial load on component mount
-   */
   useEffect(() => {
     fetchAllZonesData();
   }, []);
 
-  /**
-   * Handle manual refresh
-   */
   const handleRefresh = () => {
     setRefreshing(true);
     fetchAllZonesData();
@@ -466,7 +468,6 @@ export default function LagosRealtimeClimate() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
-      {/* Header Section */}
       <div className="mb-8">
         <p
           className="text-xs font-bold uppercase tracking-wider mb-2"
@@ -488,7 +489,6 @@ export default function LagosRealtimeClimate() {
         </p>
       </div>
 
-      {/* Dashboard Content */}
       <DashboardContent
         zoneDataList={zoneDataList}
         loading={loading}

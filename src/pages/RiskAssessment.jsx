@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, CheckCircle, Info, Upload, X } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { Info, Upload, X } from "lucide-react";
 
 const lagosAreas = [
   "Lagos Island", "Lagos Mainland", "Ikeja", "Lekki", "Victoria Island",
@@ -48,29 +47,25 @@ const typeHeatRisk = {
 export default function RiskAssessment() {
   const [form, setForm] = useState({ location: "", type: "", duration: "", startMonth: "" });
   const [result, setResult] = useState(null);
-  const [saving, setSaving] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
 
   const months = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
-  const rainyMonths = [3, 4, 5, 6, 7, 8, 9, 10]; // April–Nov index
+  const rainyMonths = [3, 4, 5, 6, 7, 8, 9, 10];
 
   function calculate() {
     const startIdx = months.indexOf(form.startMonth);
     const dur = parseInt(form.duration) || 6;
 
-    // Flood risk based on location
     const floodRisk = floodRiskByArea[form.location] || 60;
 
-    // Rainfall delay: months overlapping rainy season
     let rainyOverlap = 0;
     for (let i = 0; i < dur; i++) {
       if (rainyMonths.includes((startIdx + i) % 12)) rainyOverlap++;
     }
     const rainfallRisk = Math.min(95, Math.round((rainyOverlap / Math.max(dur, 1)) * 100));
 
-    // Heat stress
     const heatRisk = typeHeatRisk[form.type] || 55;
 
     const overall = Math.round((floodRisk * 0.4 + rainfallRisk * 0.35 + heatRisk * 0.25));
@@ -78,22 +73,9 @@ export default function RiskAssessment() {
 
     const newResult = { floodRisk, rainfallRisk, heatRisk, overall };
     setResult(newResult);
-
-    setSaving(true);
-    base44.entities.RiskAssessmentResult.create({
-      location: form.location,
-      project_type: form.type,
-      duration_months: parseInt(form.duration),
-      start_month: form.startMonth,
-      flood_risk: floodRisk,
-      rainfall_risk: rainfallRisk,
-      heat_risk: heatRisk,
-      overall_risk: overall,
-      risk_level: riskLevel,
-    }).finally(() => setSaving(false));
   }
 
-  const canSubmit = form.location && form.type && form.duration && form.startMonth && uploadedFiles.length > 0;
+  const canSubmit = form.location && form.type && form.duration && form.startMonth;
   const risk = result ? getRiskLevel(result.overall) : null;
 
   function handleFileUpload(files) {
@@ -148,7 +130,6 @@ export default function RiskAssessment() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Form */}
         <div className="rounded-2xl p-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
           <h2 className="text-lg font-bold mb-6">Project Details</h2>
           <div className="space-y-4">
@@ -201,15 +182,13 @@ export default function RiskAssessment() {
             </div>
             <button
               onClick={calculate}
-              disabled={!canSubmit}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors py-3 rounded-xl font-semibold mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-500 transition-colors py-3 rounded-xl font-semibold mt-2"
             >
               Generate Risk Score
             </button>
           </div>
         </div>
 
-        {/* Results */}
         <div className="rounded-2xl p-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
           <h2 className="text-lg font-bold mb-6">Risk Assessment Results</h2>
           {!result ? (
@@ -240,7 +219,6 @@ export default function RiskAssessment() {
         </div>
       </div>
 
-      {/* File Upload Section */}
       <div className="mt-12 rounded-2xl p-6" style={{ background: "var(--bc-surface)", border: "1px solid var(--bc-border)" }}>
         <h2 className="text-lg font-bold mb-4">Upload Project Data (Optional)</h2>
         <p className="text-sm mb-6" style={{ color: "var(--bc-text-muted)" }}>

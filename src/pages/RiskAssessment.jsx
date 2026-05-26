@@ -69,13 +69,11 @@ export default function RiskAssessment() {
     const heatRisk = typeHeatRisk[form.type] || 55;
 
     const overall = Math.round((floodRisk * 0.4 + rainfallRisk * 0.35 + heatRisk * 0.25));
-    const riskLevel = overall >= 70 ? "High Risk" : overall >= 40 ? "Moderate Risk" : "Low Risk";
 
     const newResult = { floodRisk, rainfallRisk, heatRisk, overall };
     setResult(newResult);
   }
 
-  const canSubmit = form.location && form.type && form.duration && form.startMonth;
   const risk = result ? getRiskLevel(result.overall) : null;
 
   function handleFileUpload(files) {

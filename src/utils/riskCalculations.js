@@ -17,11 +17,9 @@ export function calculateFloodRisk(weatherData, floodBias) {
 
   const cloudScore = (clouds.all / 100) * 10;
 
-  let totalScore = baseScore + rainfallScore + humidityScore + weatherScore + cloudScore;
-  totalScore = totalScore * (floodBias / 2);
-  totalScore = Math.min(100, Math.max(0, totalScore));
+  const totalScore = (baseScore + rainfallScore + humidityScore + weatherScore + cloudScore) * (floodBias / 2);
 
-  return Math.round(totalScore);
+  return Math.round(Math.min(100, Math.max(0, totalScore)));
 }
 
 export function calculateHeatStressRisk(weatherData, heatBias) {
@@ -29,7 +27,7 @@ export function calculateHeatStressRisk(weatherData, heatBias) {
   const temp = main.temp;
   const humidity = main.humidity;
 
-  let tempScore = 0;
+  let tempScore;
   if (temp < 25) tempScore = 10;
   else if (temp < 27) tempScore = 20;
   else if (temp < 29) tempScore = 35;
@@ -43,11 +41,7 @@ export function calculateHeatStressRisk(weatherData, heatBias) {
     windFactor = 0.85;
   }
 
-  let totalScore = (tempScore + humidityScore) * windFactor;
-  totalScore = totalScore * (heatBias / 2);
-  totalScore = Math.min(100, Math.max(0, totalScore));
-
-  return Math.round(totalScore);
+  return Math.round(Math.min(100, Math.max(0, (tempScore + humidityScore) * windFactor * (heatBias / 2))));
 }
 
 export function calculateRainfallDelayRisk(weatherData) {
